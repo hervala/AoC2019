@@ -171,6 +171,30 @@ namespace AdventOfCode2019Test
             var programAfter = Day05.ProcessIntcode(program, 5, out var output);
             Assert.Equal(14340395, output);
         }
+
+        [Fact]
+        public async Task Day06_Part1_Test()
+        {
+            //var input = "COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L";
+            var result = await fixture.Client.GetAsync("/2019/day/6/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var checkSum = Day06.CalculateOrbitCountCheckSum(input, out _);
+            Assert.Equal(142915, checkSum);
+        }
+
+        [Fact]
+        public async Task Day06_Part2_Test()
+        {
+            //var input = "COM)B\nB)C\nC)D\nD)E\nE)F\nB)G\nG)H\nD)I\nE)J\nJ)K\nK)L";
+            var result = await fixture.Client.GetAsync("/2019/day/6/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var checkSum = Day06.CalculateOrbitCountCheckSum(input, out var orbits);
+            var orbitTransfers = Day06_Part2.OrbitalTransfers(orbits, "YOU", "SAN");
+            Assert.Equal(283, orbitTransfers);
+        }
+
     }
 
 
