@@ -195,6 +195,185 @@ namespace AdventOfCode2019Test
             Assert.Equal(283, orbitTransfers);
         }
 
+
+        [Fact]
+        public async Task Day07_Part1_Test()
+        {
+            var useRealInput = true;
+            var input = string.Empty;
+            if (useRealInput)
+            {
+                var result = await fixture.Client.GetAsync("/2019/day/7/input");
+                result.EnsureSuccessStatusCode();
+                input = await result.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                input = "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0";
+                input = "3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0";
+            }
+            var inputArray = input.Split(",");
+            var instructions = inputArray.Select(v => int.Parse(v)).ToArray();
+
+            var ampA = new AdventOfCode2019.Day07.IntCodeComputer("Amp A");
+            var ampB = new AdventOfCode2019.Day07.IntCodeComputer("Amp B");
+            var ampC = new AdventOfCode2019.Day07.IntCodeComputer("Amp C");
+            var ampD = new AdventOfCode2019.Day07.IntCodeComputer("Amp D");
+            var ampE = new AdventOfCode2019.Day07.IntCodeComputer("Amp E");
+
+            var maxOutput = int.MinValue;
+
+            for (int input1 = 0; input1 <= 4; input1++)
+            {
+                var output1 = ampA.ProcessIntcode(instructions, new[] { input1, 0 });
+                
+                for (int input2 = 0; input2 <= 4; input2++)
+                {
+                    int output2 = 0;
+                    if (input2 != input1)
+                    {
+                        output2 = ampB.ProcessIntcode(instructions, new[] { input2, output1 });
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    for (int input3 = 0; input3 <= 4; input3++)
+                    {
+                        int output3 = 0;
+                        if (input3 != input2 && input3 != input1)
+                        {
+                            output3 = ampC.ProcessIntcode(instructions, new[] { input3, output2 });
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                        for (int input4 = 0; input4 <= 4; input4++)
+                        {
+                            int output4 = 0;
+                            if (input4 != input3 && input4 != input2 && input4 != input1)
+                            {
+                                output4 = ampD.ProcessIntcode(instructions, new[] { input4, output3 });
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            for (int input5 = 0; input5 <= 4; input5++)
+                            {
+                                var output5 = 0;
+                                if (input5 != input4 && input5 != input3 && input5 != input2 && input5 != input1)
+                                {
+                                    output5 = ampE.ProcessIntcode(instructions, new[] { input5, output4 });
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                                if (output5 > maxOutput)
+                                {
+                                    maxOutput = output5;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Assert.Equal(437860, maxOutput);
+        }
+
+
+        [Fact]
+        public async Task Day07_Part2_Test()
+        {
+            var useRealInput = true;
+            var input = string.Empty;
+            if (useRealInput)
+            {
+                var result = await fixture.Client.GetAsync("/2019/day/7/input");
+                result.EnsureSuccessStatusCode();
+                input = await result.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                input = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5";
+            }
+            var inputArray = input.Split(",");
+            var instructions = inputArray.Select(v => int.Parse(v)).ToArray();
+            var maxOutput = int.MinValue;
+
+            for (int input1 = 5; input1 <= 9; input1++)
+            {
+                for (int input2 = 5; input2 <= 9; input2++)
+                {
+                    if (input2 == input1)
+                    {
+                        continue;
+                    }
+
+                    for (int input3 = 5; input3 <= 9; input3++)
+                    {
+                        if (input3 == input2 || input3 == input1)
+                        {
+                            continue;
+                        }
+
+                        for (int input4 = 5; input4 <= 9; input4++)
+                        {
+                            if (input4 == input3 || input4 == input2 || input4 == input1)
+                            {
+                                continue;
+                            }
+
+                            for (int input5 = 5; input5 <= 9; input5++)
+                            {
+                                if (input5 == input4 || input5 == input3 || input5 == input2 || input5 == input1)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    var ampA = new AdventOfCode2019.Day07.IntCodeComputerStatefull("Amp A", instructions, new[] { input1, 0 });
+                                    var (output1, state1) = ampA.RunProgram();
+                                    var ampB = new AdventOfCode2019.Day07.IntCodeComputerStatefull("Amp B", instructions, new[] { input2 });
+                                    var (output2, state2) = ampB.RunProgram(new[] { output1 });
+                                    var ampC = new AdventOfCode2019.Day07.IntCodeComputerStatefull("Amp C", instructions, new[] { input3 });
+                                    var (output3, state3) = ampC.RunProgram(new[] { output2 });
+                                    var ampD = new AdventOfCode2019.Day07.IntCodeComputerStatefull("Amp D", instructions, new[] { input4 });
+                                    var (output4, state4) = ampD.RunProgram(new[] { output3 });
+                                    var ampE = new AdventOfCode2019.Day07.IntCodeComputerStatefull("Amp E", instructions, new[] { input5 });
+                                    var (output5, state5) = ampE.RunProgram(new[] { output4 });
+
+                                    while (state5 == AdventOfCode2019.Day07.ProcessState.Paused)
+                                    {
+                                        (output1, state1) = ampA.RunProgram(new[] { output5 });
+                                        (output2, state2) = ampB.RunProgram(new[] { output1 });
+                                        (output3, state3) = ampC.RunProgram(new[] { output2 });
+                                        (output4, state4) = ampD.RunProgram(new[] { output3 });
+                                        (output5, state5) = ampE.RunProgram(new[] { output4 });
+                                    }
+
+                                    if (output5 > maxOutput)
+                                    {
+                                        maxOutput = output5;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Assert.Equal(49810599, maxOutput);
+        }
+
+
+
     }
 
 
