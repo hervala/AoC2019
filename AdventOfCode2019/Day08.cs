@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Drawing;
 
 namespace AdventOfCode2019
 {
@@ -103,6 +104,24 @@ namespace AdventOfCode2019
             }
 
             return image;
+        }
+
+        public static Bitmap DrawImage(int[,] image, bool invertColors)
+        {
+            var bmp = new Bitmap(image.GetLength(0), image.GetLength(1));
+
+            for (int y = 0; y < image.GetLength(1); y++)
+            {
+                for (int x = 0; x < image.GetLength(0); x++)
+                {
+                    bmp.SetPixel(x, y, color:
+                        image[x, y] == Black ? invertColors ? Color.White : Color.Black : 
+                        image[x, y] == White ? invertColors ? Color.Black : Color.White :
+                        Color.Transparent);
+                }
+            }
+
+            return bmp;
         }
 
 

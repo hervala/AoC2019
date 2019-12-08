@@ -420,6 +420,9 @@ namespace AdventOfCode2019Test
 
             Assert.Equal("KAUZA", "KAUZA");
 
+            // lets make bmp
+            Day08.DrawImage(image, invertColors: true).Save("biosPassword.gif", System.Drawing.Imaging.ImageFormat.Gif);
+
          }
     }
 
