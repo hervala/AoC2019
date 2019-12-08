@@ -6,6 +6,7 @@ using AdventOfCode2019;
 using System.Net;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace AdventOfCode2019Test
 {
@@ -372,8 +373,54 @@ namespace AdventOfCode2019Test
             Assert.Equal(49810599, maxOutput);
         }
 
+        [Fact]
+        public async Task Day08_Part1_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/8/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var image = Day08.DecodeImageData(input, imageWidth: 25, imageHeight: 6);
+            var checksum = Day08.Checksum(image);
+            Assert.Equal(2064, checksum);
+        }
 
+        [Fact]
+        public async Task Day08_Part2_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/8/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var imageLayers = Day08.DecodeImageData(input, imageWidth: 25, imageHeight: 6);
+            var image = Day08.MergeLayers(imageLayers);
 
+            for (int j = 0; j < image.GetLength(1); j++)
+            {
+                for (int i = 0; i < image.GetLength(0); i++)
+                {
+                    if (image[i, j] == Day08.Black)
+                    {
+                        Debug.Write("@");
+                    }
+                    else
+                    {
+                        Debug.Write(".");
+                    }
+                    
+                }
+                Debug.Write(Environment.NewLine);
+            }
+
+            // output:
+            //.@@.@@..@@.@@.@....@@..@@
+            //.@.@@.@@.@.@@.@@@@.@.@@.@
+            //..@@@.@@.@.@@.@@@.@@.@@.@
+            //.@.@@....@.@@.@@.@@@....@
+            //.@.@@.@@.@.@@.@.@@@@.@@.@
+            //.@@.@.@@.@@..@@....@.@@.@
+
+            Assert.Equal("KAUZA", "KAUZA");
+
+         }
     }
 
 
