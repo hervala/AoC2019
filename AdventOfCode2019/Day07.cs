@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -137,6 +137,12 @@ namespace AdventOfCode2019.Day07
             {
                 inputs = inputs.Concat(newInputs).ToArray();
             }
+
+            int firstParameterValue() => program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1];
+            int secondParameterValue() => program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2];
+            int firstParameterPointer() => program[instructionPointer + 1];
+            int thirdParameterPointer() => program[instructionPointer + 3];
+
             while (instructionPointer < program.Length && program[instructionPointer] != 99)
             {
                 /*
@@ -149,19 +155,16 @@ namespace AdventOfCode2019.Day07
                  A - mode of 3rd parameter,  0 == position mode,
                                                   omitted due to being a leading zero
                 */
-                // int firstParameterValue = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]);
-                // int secondParameterValue = (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]);
-                // int thirdParameterPointer = program[instructionPointer + 3];
                 switch (program[instructionPointer] % 100)
                 {
                     case 1:
                         // sum
-                        program[program[instructionPointer + 3]] = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]) + (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]);
+                        program[thirdParameterPointer()] = firstParameterValue() + secondParameterValue();
                         instructionPointer += 4;
                         break;
                     case 2:
                         // multiply
-                        program[program[instructionPointer + 3]] = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]) * (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]);
+                        program[thirdParameterPointer()] = firstParameterValue() * secondParameterValue();
                         instructionPointer += 4;
                         break;
                     case 3:
@@ -170,7 +173,7 @@ namespace AdventOfCode2019.Day07
                         {
                             var input = inputs[0];
                             inputs = inputs[1..];
-                            program[program[instructionPointer + 1]] = input;
+                            program[firstParameterPointer()] = input;
                         }
                         catch (Exception)
                         {
@@ -181,25 +184,25 @@ namespace AdventOfCode2019.Day07
                         break;
                     case 4:
                         // get output
-                        output = program[program[instructionPointer] / 100 % 10 == 0 ? program[instructionPointer + 1] : instructionPointer + 1];
+                        output = firstParameterValue();
                         instructionPointer += 2;
                         return (output, ProcessState.Paused);  // return output and pause execution
                     case 5:
                         // jump-if-true
-                        instructionPointer = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]) != 0 ? (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]) : instructionPointer + 3;
+                        instructionPointer = firstParameterValue() != 0 ? secondParameterValue() : instructionPointer + 3;
                         break;
                     case 6:
                         // jump-if-false
-                        instructionPointer = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]) == 0 ? (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]) : instructionPointer + 3;
+                        instructionPointer = firstParameterValue() == 0 ? secondParameterValue() : instructionPointer + 3;
                         break;
                     case 7:
                         // less than
-                        program[program[instructionPointer + 3]] = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]) < (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]) ? 1 : 0;
+                        program[thirdParameterPointer()] = firstParameterValue() < secondParameterValue() ? 1 : 0;
                         instructionPointer += 4;
                         break;
                     case 8:
                         // equals
-                        program[program[instructionPointer + 3]] = (program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer + 1]) == (program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer + 2]) ? 1 : 0;
+                        program[thirdParameterPointer()] = firstParameterValue() == secondParameterValue() ? 1 : 0;
                         instructionPointer += 4;
                         break;
                     default:
