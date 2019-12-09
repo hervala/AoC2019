@@ -424,6 +424,48 @@ namespace AdventOfCode2019Test
             Day08.DrawImage(image, invertColors: true).Save("biosPassword.gif", System.Drawing.Imaging.ImageFormat.Gif);
 
          }
+
+
+        [Fact]
+        public async Task Day09_Part1_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/9/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var inputArray = input.Split(",");
+            var program = inputArray.Select(v => long.Parse(v)).ToArray();
+            var intCodeProcesser = new AdventOfCode2019.Day09.IntCodeComputerStatefull(program, new[] { 1L });
+            var state = AdventOfCode2019.Day09.IntCodeComputerStatefull.ProcessState.Paused;
+            var output = 0L;
+            while (state != AdventOfCode2019.Day09.IntCodeComputerStatefull.ProcessState.Ended)
+            { 
+                (output, state) = intCodeProcesser.RunProgram();
+                Debug.Write($"{output},");
+            }
+           
+            Assert.Equal(2714716640, output);
+        }
+
+        [Fact]
+        public async Task Day09_Part2_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/9/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var inputArray = input.Split(",");
+            var program = inputArray.Select(v => long.Parse(v)).ToArray();
+            var intCodeProcesser = new AdventOfCode2019.Day09.IntCodeComputerStatefull(program, new[] { 2L });
+            var state = AdventOfCode2019.Day09.IntCodeComputerStatefull.ProcessState.Paused;
+            var output = 0L;
+            while (state != AdventOfCode2019.Day09.IntCodeComputerStatefull.ProcessState.Ended)
+            {
+                (output, state) = intCodeProcesser.RunProgram();
+                Debug.Write($"{output},");
+            }
+
+            Assert.Equal(58879, output);
+        }
+
     }
 
 

@@ -8,13 +8,21 @@ namespace AdventOfCode2019.Day09
     public class IntCodeComputerStatefull
     {
         private readonly string identifier;
-        private readonly int[] program;
+        private long[] program;
         private int instructionPointer = 0;
-        private int[] inputs;
-        private int output;
+        private long[] inputs;
+        private long output;
         private int relativeBase;
 
-        public IntCodeComputerStatefull(string identifier, IEnumerable<int> instructions, IEnumerable<int> initialInput)
+        public IntCodeComputerStatefull(IEnumerable<long> instructions) : this(instructions, new long[] { })
+        {
+        }
+
+        public IntCodeComputerStatefull(IEnumerable<long> instructions, IEnumerable<long> initialInput) : this("id001", instructions, initialInput)
+        {
+        }
+
+        public IntCodeComputerStatefull(string identifier, IEnumerable<long> instructions, IEnumerable<long> initialInput)
         {
             if (instructions is null)
             {
@@ -31,28 +39,26 @@ namespace AdventOfCode2019.Day09
             this.inputs = initialInput.ToArray();
         }
 
-        public (int output, ProcessState state) RunProgram() => RunProgram(new int[] { });
+        public (long output, ProcessState state) RunProgram() => RunProgram(new long[] { });
 
-        public (int output, ProcessState state) RunProgram(IEnumerable<int> newInputs)
+        public (long output, ProcessState state) RunProgram(IEnumerable<long> newInputs)
         {
             if (newInputs.Any())
             {
                 inputs = inputs.Concat(newInputs).ToArray();
             }
 
-            int firstParameterValue() => program[instructionPointer] / 100 % 10 == 0 ? program[program[instructionPointer + 1]] : program[instructionPointer] / 100 % 10 == 1 ? program[instructionPointer + 1] : program[relativeBase + program[instructionPointer + 1]]; 
-            int secondParameterValue() => program[instructionPointer] / 1000 % 10 == 0 ? program[program[instructionPointer + 2]] : program[instructionPointer] / 1000 % 10 == 1 ? program[instructionPointer + 2] : program[relativeBase + program[instructionPointer + 2]];
-            int firstParameterPointer() => program[instructionPointer + 1];
-            int thirdParameterPointer() => program[instructionPointer + 3];
+            var value = 0L;
+            var pointer = 0;
 
             while (instructionPointer < program.Length && program[instructionPointer] != 99)
             {
                 /*
                 ABCDE
-                 1002
+                 1202
 
-                DE - two - digit opcode,      02 == opcode 2
-                 C - mode of 1st parameter,  0 == position mode
+                DE - two - digit opcode,    02 == opcode 2
+                 C - mode of 1st parameter,  2 == relative mode
                  B - mode of 2nd parameter,  1 == immediate mode
                  A - mode of 3rd parameter,  0 == position mode,
                                                   omitted due to being a leading zero
@@ -61,12 +67,16 @@ namespace AdventOfCode2019.Day09
                 {
                     case 1:
                         // sum
-                        program[thirdParameterPointer()] = firstParameterValue() + secondParameterValue();
+                        value = ParameterValue(Param.First) + ParameterValue(Param.Second);
+                        pointer = ParameterPointer(Param.Third);
+                        program[pointer] = value;
                         instructionPointer += 4;
                         break;
                     case 2:
                         // multiply
-                        program[thirdParameterPointer()] = firstParameterValue() * secondParameterValue();
+                        value = ParameterValue(Param.First) * ParameterValue(Param.Second);
+                        pointer = ParameterPointer(Param.Third);
+                        program[pointer] = value;
                         instructionPointer += 4;
                         break;
                     case 3:
@@ -75,7 +85,8 @@ namespace AdventOfCode2019.Day09
                         {
                             var input = inputs[0];
                             inputs = inputs[1..];
-                            program[firstParameterPointer()] = input;
+                            pointer = ParameterPointer(Param.First);
+                            program[pointer] = input;
                         }
                         catch (Exception)
                         {
@@ -86,30 +97,34 @@ namespace AdventOfCode2019.Day09
                         break;
                     case 4:
                         // get output
-                        output = firstParameterValue();
+                        output = ParameterValue(Param.First);
                         instructionPointer += 2;
                         return (output, ProcessState.Paused);  // return output and pause execution
                     case 5:
                         // jump-if-true
-                        instructionPointer = firstParameterValue() != 0 ? secondParameterValue() : instructionPointer + 3;
+                        instructionPointer = ParameterValue(Param.First) != 0 ? (int)ParameterValue(Param.Second) : instructionPointer + 3;
                         break;
                     case 6:
                         // jump-if-false
-                        instructionPointer = firstParameterValue() == 0 ? secondParameterValue() : instructionPointer + 3;
+                        instructionPointer = ParameterValue(Param.First) == 0 ? (int)ParameterValue(Param.Second) : instructionPointer + 3;
                         break;
                     case 7:
                         // less than
-                        program[thirdParameterPointer()] = firstParameterValue() < secondParameterValue() ? 1 : 0;
+                        value = ParameterValue(Param.First) < ParameterValue(Param.Second) ? 1 : 0;
+                        pointer = ParameterPointer(Param.Third);
+                        program[pointer] = value;
                         instructionPointer += 4;
                         break;
                     case 8:
                         // equals
-                        program[thirdParameterPointer()] = firstParameterValue() == secondParameterValue() ? 1 : 0;
+                        value = ParameterValue(Param.First) == ParameterValue(Param.Second) ? 1 : 0;
+                        pointer = ParameterPointer(Param.Third);
+                        program[pointer] = value;
                         instructionPointer += 4;
                         break;
                     case 9:
                         // set relative base
-                        relativeBase = firstParameterValue();
+                        relativeBase = relativeBase + (int)ParameterValue(Param.First);
                         instructionPointer += 2;
                         break;
                     default:
@@ -120,11 +135,65 @@ namespace AdventOfCode2019.Day09
             return (output, ProcessState.Ended);
         }
 
+        private int ParameterPointer(Param param)
+        {
+            var mode = GetParamMode(param);
+            var paramPointer = mode switch
+            {
+                Mode.Position => (int)program[instructionPointer + (int)param],
+                Mode.Relative => relativeBase + (int)program[instructionPointer + (int)param],
+                _ => throw new Exception("unknown parameter mode."),
+            };
+            ResizeProgramArray(paramPointer);
+            return paramPointer;
+        }
+
+        private long ParameterValue(Param param)
+        {
+            var mode = GetParamMode(param);
+            var paramPointer= mode switch
+            {
+                Mode.Immediate => instructionPointer + (int)param,
+                Mode.Position => (int)program[instructionPointer + (int)param],
+                Mode.Relative => relativeBase + (int)program[instructionPointer + (int)param],
+                _ => throw new Exception("unknown parameter mode."),
+            };
+            ResizeProgramArray(paramPointer);
+
+            return program[paramPointer];
+        }
+
+        private void ResizeProgramArray(int paramPointer)
+        {
+            if (paramPointer >= program.Length)
+            {
+                Array.Resize(ref program, paramPointer + 1);
+            }
+        }
+
+        private Mode GetParamMode(Param param)
+        {
+            return (Mode)(program[instructionPointer] / (int)Math.Pow(10,(int)param+1) % 10);
+        }
+
         public enum ProcessState
         {
             Paused,
             Ended,
         }
 
+        public enum Param
+        {
+            First = 1,
+            Second,
+            Third,
+        }
+
+        public enum Mode
+        {
+            Position,
+            Immediate,
+            Relative,
+        }
     }
 }
