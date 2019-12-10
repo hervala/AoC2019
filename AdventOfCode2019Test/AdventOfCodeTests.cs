@@ -39,7 +39,7 @@ namespace AdventOfCode2019Test
                 {
                 }
             }
-            
+
             Assert.Equal(3299598, sum);
         }
 
@@ -227,7 +227,7 @@ namespace AdventOfCode2019Test
             for (int input1 = 0; input1 <= 4; input1++)
             {
                 var output1 = ampA.ProcessIntcode(instructions, new[] { input1, 0 });
-                
+
                 for (int input2 = 0; input2 <= 4; input2++)
                 {
                     int output2 = 0;
@@ -405,7 +405,7 @@ namespace AdventOfCode2019Test
                     {
                         Debug.Write(".");
                     }
-                    
+
                 }
                 Debug.Write(Environment.NewLine);
             }
@@ -423,7 +423,7 @@ namespace AdventOfCode2019Test
             // lets make bmp
             Day08.DrawImage(image, invertColors: true).Save("biosPassword.gif", System.Drawing.Imaging.ImageFormat.Gif);
 
-         }
+        }
 
 
         [Fact]
@@ -438,11 +438,11 @@ namespace AdventOfCode2019Test
             var state = AdventOfCode2019.Day09.IntCodeComputerStatefull.ProcessState.Paused;
             var output = 0L;
             while (state != AdventOfCode2019.Day09.IntCodeComputerStatefull.ProcessState.Ended)
-            { 
+            {
                 (output, state) = intCodeProcesser.RunProgram();
                 Debug.Write($"{output},");
             }
-           
+
             Assert.Equal(2714716640, output);
         }
 
@@ -466,9 +466,63 @@ namespace AdventOfCode2019Test
             Assert.Equal(58879, output);
         }
 
+        [Fact]
+        public async Task Day10_Part1_Test()
+        {
+            var asteroidMap = ".#..#\n.....\n#####\n....#\n...##";
+            asteroidMap = @"......#.#.
+#..#.#....
+..#######.
+.#.#.###..
+.#..#.....
+..#....#.#
+#..#....#.
+.##.#..###
+##...#..#.
+.#....####";
+            asteroidMap = @"#.#...#.#.
+.###....#.
+.#....#...
+##.#.#.#.#
+....#.#.#.
+.##..###.#
+..#...##..
+..##....##
+......#...
+.####.###.";
+            asteroidMap = @".#..##.###...#######
+##.############..##.
+.#.######.########.#
+.###.#######.####.#.
+#####.##.#.##.###.##
+..#####..#.#########
+####################
+#.####....###.#.#.##
+##.#################
+#####.##.###..####..
+..######..##.#######
+####.##.####...##..#
+.#####..#.######.###
+##...#.##########...
+#.##########.#######
+.####.#.###.###.#.##
+....##.##.###..#####
+.#.#.###########.###
+#.#.#.#####.####.###
+###.##.####.##.#..##";
+
+            // Here is the real input. Those before are examples from the puzzle.
+            var result = await fixture.Client.GetAsync("/2019/day/10/input");
+            result.EnsureSuccessStatusCode();
+            asteroidMap = await result.Content.ReadAsStringAsync();
+
+            var mapArray = asteroidMap.Split("\n").SkipLast(1).ToArray();
+            var maxAsteroidsInView = Day10.CalculateMaxAsteroidsInView(mapArray);
+
+            Assert.Equal(269, maxAsteroidsInView);
+        }
+
     }
-
-
     public class HttpClientFixture : IDisposable
     {
         private readonly HttpClientHandler handler;
