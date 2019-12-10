@@ -422,9 +422,7 @@ namespace AdventOfCode2019Test
 
             // lets make bmp
             Day08.DrawImage(image, invertColors: true).Save("biosPassword.gif", System.Drawing.Imaging.ImageFormat.Gif);
-
         }
-
 
         [Fact]
         public async Task Day09_Part1_Test()
