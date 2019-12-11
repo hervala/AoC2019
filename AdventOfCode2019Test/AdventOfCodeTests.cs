@@ -520,6 +520,42 @@ namespace AdventOfCode2019Test
             Assert.Equal(269, maxAsteroidsInView);
         }
 
+        [Fact]
+        public async Task Day10_Part2_Test()
+        {
+            var asteroidMap = @".#..##.###...#######
+##.############..##.
+.#.######.########.#
+.###.#######.####.#.
+#####.##.#.##.###.##
+..#####..#.#########
+####################
+#.####....###.#.#.##
+##.#################
+#####.##.###..####..
+..######..##.#######
+####.##.####...##..#
+.#####..#.######.###
+##...#.##########...
+#.##########.#######
+.####.#.###.###.#.##
+....##.##.###..#####
+.#.#.###########.###
+#.#.#.#####.####.###
+###.##.####.##.#..##
+";
+
+            // Here is the real input. Those before are examples from the puzzle. (use \r\b split for hard coded test inputs)
+            var result = await fixture.Client.GetAsync("/2019/day/10/input");
+            result.EnsureSuccessStatusCode();
+            asteroidMap = await result.Content.ReadAsStringAsync();
+
+            var mapArray = asteroidMap.Split("\n").SkipLast(1).ToArray();
+            var maxAsteroidsInView = Day10.Vaporize200Asteroids(mapArray);
+
+            Assert.Equal(612, maxAsteroidsInView);
+        }
+
     }
     public class HttpClientFixture : IDisposable
     {
