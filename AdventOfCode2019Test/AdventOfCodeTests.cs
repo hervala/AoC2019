@@ -7,6 +7,7 @@ using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
 
 namespace AdventOfCode2019Test
 {
@@ -555,6 +556,40 @@ namespace AdventOfCode2019Test
 
             Assert.Equal(612, maxAsteroidsInView);
         }
+
+        [Fact]
+        public async Task Day11_Part1_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/11/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var inputArray = input.Split(",");
+            var program = inputArray.Select(v => long.Parse(v)).ToArray();
+
+            var painter = new AdventOfCode2019.Day11.Painter(AdventOfCode2019.Day11.Painter.TileColor.Black);
+            painter.Paint(program);
+
+            Assert.Equal(2392, painter.TilesPlainted);
+        }
+
+        [Fact]
+        public async Task Day11_Part2_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/11/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var inputArray = input.Split(",");
+            var program = inputArray.Select(v => long.Parse(v)).ToArray();
+
+            var painter = new AdventOfCode2019.Day11.Painter(AdventOfCode2019.Day11.Painter.TileColor.White);
+            painter.Paint(program);
+
+            painter.GetImage().Save("license.gif", System.Drawing.Imaging.ImageFormat.Gif);
+
+            Assert.Equal("EGBHLEUE", "EGBHLEUE");
+        }
+
+
 
     }
     public class HttpClientFixture : IDisposable
