@@ -589,6 +589,16 @@ namespace AdventOfCode2019Test
             Assert.Equal("EGBHLEUE", "EGBHLEUE");
         }
 
+        [Fact]
+        public async Task Day12_Part1_Test()
+        {
+            var result = await fixture.Client.GetAsync("/2019/day/12/input");
+            result.EnsureSuccessStatusCode();
+            var input = await result.Content.ReadAsStringAsync();
+            var totalEnergy = Day12.CalculateMoonSystemsTotalEnergy(input, steps: 1000);
+            Assert.Equal(7202, totalEnergy);
+        }
+
 
 
     }
