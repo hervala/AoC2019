@@ -10,7 +10,7 @@ namespace AdventOfCode2019
     {
         static async Task Main(string[] args)
         {
-            var day = 132;  // xxy  xx = day y = part
+            var day = 171;  // xxy  xx = day y = part
             switch (day)
             {
                 case 131:
@@ -18,6 +18,10 @@ namespace AdventOfCode2019
                     break;
                 case 132:
                     await Day13_Part2();
+                    Console.ReadLine();
+                    break;
+                case 171:
+                    await Day17_Part1();
                     Console.ReadLine();
                     break;
                 default:
@@ -30,14 +34,7 @@ namespace AdventOfCode2019
 
         private static async Task Day13_Part1()
         {
-            var baseAddress = new Uri(@"https://adventofcode.com");
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
-            var Client = new HttpClient(handler) { BaseAddress = baseAddress };
-            cookieContainer.Add(baseAddress, new Cookie("session", Environment.GetEnvironmentVariable("AoCSession", EnvironmentVariableTarget.User)));
-            var result = await Client.GetAsync("/2019/day/13/input");
-            result.EnsureSuccessStatusCode();
-            var input = await result.Content.ReadAsStringAsync();
+            var input = Day13_Program;
             var inputArray = input.Split(",");
             var program = inputArray.Select(v => long.Parse(v)).ToArray();
             var blockTileCount = Day13.DrawPlayarea(program);
@@ -50,15 +47,6 @@ namespace AdventOfCode2019
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.CursorVisible = false;
-
-            //var baseAddress = new Uri(@"https://adventofcode.com");
-            //var cookieContainer = new CookieContainer();
-            //var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
-            //var Client = new HttpClient(handler) { BaseAddress = baseAddress };
-            //cookieContainer.Add(baseAddress, new Cookie("session", Environment.GetEnvironmentVariable("AoCSession", EnvironmentVariableTarget.User)));
-            //var result = await Client.GetAsync("/2019/day/13/input");
-            //result.EnsureSuccessStatusCode();
-            //var input = await result.Content.ReadAsStringAsync();
             var input = Day13_Program;
             var inputArray = input.Split(",");
             var program = inputArray.Select(v => long.Parse(v)).ToArray();
@@ -69,7 +57,23 @@ namespace AdventOfCode2019
 
             Console.SetCursorPosition(8, 12);
             Console.Write($"Press [enter] to exit.");
-
         }
+
+        private static async Task Day17_Part1()
+        {
+            Console.CursorVisible = false;
+            Console.Clear();
+            Console.WindowLeft = 0;
+            Console.WindowTop = 0;
+            Console.WindowWidth = Console.LargestWindowWidth / 2;
+            Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
+            var blockTileCount = Day17.CalibrateCamera();
+        }
+
+        private static async Task Day17_Part2()
+        {
+            // have to learn some LZ77 first
+        }
+
     }
 }

@@ -708,6 +708,28 @@ namespace AdventOfCode2019Test
 5 PFMFC, 4 NRLM => 9 MNWVT
 7 ZPVWS, 14 ZPCP, 11 TJHD => 2 MGXB";
 
+        [Fact]
+        public async Task Day15_Part1_Test()
+        {
+            // not done.. no time at the moment.. will look into it later. 
+            // thinks should do some maze solver and path findin stuff.
+            AdventOfCode2019.Day15.TheDay.LetsDoThis();
+        }
+
+        [Fact]
+        public async Task Day16_Part1_Test()
+        {
+            var output = Day16.CalculateFftTheIdiotWay();
+            Assert.Equal("29795507", output);
+        }
+
+        [Fact]
+        public async Task Day17_Part1_Test()
+        {
+            var calibration = Day17.CalibrateCamera();
+            Assert.Equal(7280, calibration);
+        }
+
     }
     public class HttpClientFixture : IDisposable
     {
