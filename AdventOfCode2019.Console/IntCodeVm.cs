@@ -16,7 +16,13 @@ namespace AdventOfCode2019
         private int instructionPointer = 0;
         private int relativeBase;
 
+        private TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+
         public IntCodeVm(IEnumerable<long> instructions, BufferBlock<long> input, BufferBlock<long> output) : this("id001", instructions, input, output)
+        {
+        }
+
+        public IntCodeVm(string instructions, BufferBlock<long> input, BufferBlock<long> output) : this("id001", instructions.Split(",").Select(v => long.Parse(v)).ToArray(), input, output)
         {
         }
 
@@ -36,6 +42,23 @@ namespace AdventOfCode2019
             this.input = input;
             this.output = output;
             this.program = instructions.ToArray();
+        }
+
+        public void Poke(int pointer, long value)
+        {
+            program[pointer] = value;
+        }
+
+        public async Task Reset(string programStr)
+        {
+            this.program = programStr.Split(",").Select(v => long.Parse(v)).ToArray();
+            instructionPointer = 0;
+        }
+
+        public Task<bool> AwaitingInputAsync()
+        {
+            tcs = new TaskCompletionSource<bool>();
+            return tcs.Task;
         }
 
         public async Task RunProgram() => await RunProgram(new CancellationTokenSource().Token);
@@ -78,7 +101,12 @@ namespace AdventOfCode2019
                         try
                         {
                             pointer = ParameterPointer(Param.First);
-                            program[pointer] = await input.ReceiveAsync(TimeSpan.FromSeconds(500), ctoken);
+                            if (!input.TryReceive(out var inputValue))
+                            {
+                                tcs.SetResult(true);
+                                inputValue = await input.ReceiveAsync(TimeSpan.FromSeconds(500), ctoken);
+                            }
+                            program[pointer] = inputValue;
                         }
                         catch (Exception)
                         {
@@ -123,6 +151,7 @@ namespace AdventOfCode2019
                         throw new Exception($"invalid opcode {program[instructionPointer]}");
                 }
             }
+            tcs.SetResult(false);
         }
 
         private int ParameterPointer(Param param)

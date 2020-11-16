@@ -730,6 +730,25 @@ namespace AdventOfCode2019Test
             Assert.Equal(7280, calibration);
         }
 
+        [Fact]
+        public async Task Day22_Part1_Test()
+        {
+            var posOf2019 = Day22.ShuffleAndDeal();
+            Assert.Equal(2306, posOf2019);
+        }
+
+        [Fact]
+        public async Task Day23_Part1_Test()
+        {
+            Day23.Cat6Router();
+        }
+
+        [Fact]
+        public async Task Day23_Part2_Test()
+        {
+            Day23.Cat6RouterWithNat();
+        }
+
     }
     public class HttpClientFixture : IDisposable
     {

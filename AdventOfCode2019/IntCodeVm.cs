@@ -11,16 +11,24 @@ namespace AdventOfCode2019
     {
         private readonly string identifier;
         private readonly BufferBlock<long> input;
-        private readonly BufferBlock<long> output;
+        private readonly ITargetBlock<long> output;
         private long[] program;
         private int instructionPointer = 0;
         private int relativeBase;
 
-        public IntCodeVm(IEnumerable<long> instructions, BufferBlock<long> input, BufferBlock<long> output) : this("id001", instructions, input, output)
+        public IntCodeVm(IEnumerable<long> instructions, BufferBlock<long> input, ITargetBlock<long> output) : this("id001", instructions, input, output)
         {
         }
 
-        public IntCodeVm(string identifier, IEnumerable<long> instructions, BufferBlock<long> input, BufferBlock<long> output)
+        public IntCodeVm(string instructions, BufferBlock<long> input, ITargetBlock<long> output) : this("id001", instructions.Split(",").Select(v => long.Parse(v)).ToArray(), input, output)
+        {
+        }
+
+        public IntCodeVm(string identifier, string instructions, BufferBlock<long> input, ITargetBlock<long> output) : this(identifier, instructions.Split(",").Select(v => long.Parse(v)).ToArray(), input, output)
+        {
+        }
+
+        public IntCodeVm(string identifier, IEnumerable<long> instructions, BufferBlock<long> input, ITargetBlock<long> output)
         {
             if (instructions is null)
             {
@@ -36,6 +44,17 @@ namespace AdventOfCode2019
             this.input = input;
             this.output = output;
             this.program = instructions.ToArray();
+        }
+
+        public void Poke(int pointer, long value)
+        {
+            program[pointer] = value;
+        }
+
+        public async Task Reset(string programStr)
+        {
+            this.program = programStr.Split(",").Select(v => long.Parse(v)).ToArray();
+            instructionPointer = 0;
         }
 
         public async Task RunProgram() => await RunProgram(new CancellationTokenSource().Token);

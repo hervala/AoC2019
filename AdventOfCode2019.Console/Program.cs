@@ -10,7 +10,7 @@ namespace AdventOfCode2019
     {
         static async Task Main(string[] args)
         {
-            var day = 171;  // xxy  xx = day y = part
+            var day = 251;  // xxy  xx = day y = part
             switch (day)
             {
                 case 131:
@@ -22,6 +22,26 @@ namespace AdventOfCode2019
                     break;
                 case 171:
                     await Day17_Part1();
+                    Console.ReadLine();
+                    break;
+                case 172:
+                    await Day17_Part2();
+                    Console.ReadLine();
+                    break;
+                case 191:
+                    await Day19_Part1();
+                    Console.ReadLine();
+                    break;
+                case 192:
+                    await Day19_Part2();
+                    Console.ReadLine();
+                    break;
+                case 211:
+                    await Day21_Part1();
+                    Console.ReadLine();
+                    break;
+                case 251:
+                    await Day25_Part1();
                     Console.ReadLine();
                     break;
                 default:
@@ -67,12 +87,73 @@ namespace AdventOfCode2019
             Console.WindowTop = 0;
             Console.WindowWidth = Console.LargestWindowWidth / 2;
             Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
-            var blockTileCount = Day17.CalibrateCamera();
+            var calibration = Day17.CalibrateCamera();
         }
 
         private static async Task Day17_Part2()
         {
-            // have to learn some LZ77 first
+            // have to learn some LZ77 first buts lets do something for now
+            Console.CursorVisible = false;
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WindowLeft = 0;
+            Console.WindowTop = 0;
+            Console.WindowWidth = Console.LargestWindowWidth / 2;
+            Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
+            Day17.WarnRobots();
+        }
+
+        private static async Task Day19_Part1()
+        {
+            Console.CursorVisible = false;
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WindowLeft = 0;
+            Console.WindowTop = 0;
+            Console.WindowWidth = Console.LargestWindowWidth / 2;
+            Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
+            Day19.CheckTractorBeam();
+        }
+
+        private static async Task Day19_Part2()
+        {
+            Console.CursorVisible = false;
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WindowLeft = 0;
+            Console.WindowTop = 0;
+            Console.WindowWidth = Console.LargestWindowWidth / 2;
+            Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
+            Day19.CheckSantaFits();
+        }
+
+        private static async Task Day21_Part1()
+        {
+            Console.CursorVisible = false;
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WindowLeft = 0;
+            Console.WindowTop = 0;
+            Console.WindowWidth = Console.LargestWindowWidth / 2;
+            Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
+            Day21.JumpOMatic();
+        }
+
+        private static async Task Day25_Part1()
+        {
+            Console.CursorVisible = false;
+            Console.Clear();
+            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.WindowLeft = 0;
+            Console.WindowTop = 0;
+            Console.WindowWidth = Console.LargestWindowWidth / 2;
+            Console.WindowHeight = (Console.LargestWindowHeight / 4) * 3;
+            Day25.Adventure();
         }
 
     }
